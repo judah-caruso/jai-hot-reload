@@ -1,0 +1,88 @@
+-------------------------------
+Jai Hot Reload Project Template
+-------------------------------
+
+	jai build.jai        # build the program library
+	jai build.jai - host # build the host executable
+
+What
+----
+
+A very minimal project template that allows code to be
+reloaded at runtime.
+
+It only uses modules that come with the compiler and
+follows conventions I prefer (they're easy to change,
+though).
+
+How
+---
+
+The program is split into two parts:
+
+	- host.jai: responsible for memory allocation, hot
+	  reloading, and the update loop
+	
+	- program.jai: the actual program (where most, if not
+	  everything, should go)
+
+When hot reloading is enabled, the host will load the
+program library at runtime, bind the required procedures,
+and check if it needs to reload every frame. It creates a
+temporary copy of the library to ensure we can still
+overwrite the original when compiling.
+
+When hot reloading is disabled, the host imports the
+program, calling into it in the exact same way (minus the
+dynamic linking step).
+
+The program is expected to export the following:
+
+	- MaxMemory: a value to tell the host how much memory
+	  the program needs to run; if the host can allocate
+	  this memory, all allocations within the program will
+	  succeed (granted it stays below MaxMemory)
+	
+	- StateSize: a value to tell the host how large the
+	  program's global state struct is; because type
+	  information can change between compilations, this
+	  tells the host if memory can safely be reused after
+	  reloading.
+	
+	- Init: a procedure that gets called *after* the host
+	  has initialized the game's memory; it is
+	  additionally called after a reload with 'reset'
+	  denoting what kind of reload just occurred (reset =
+	  true means the program should reset its global state)
+	
+	- Startup: a procedure that's called *once* after the
+	  first call to Init
+	
+	- Teardown: a procedure that's called *once* before the
+	  program exits; program memory is deallocated *after*
+	  Teardown is called
+	
+	- Frame: a procedure that's called *once* per frame;
+	  the return value tells the host if it should
+	  hard/soft reload the program or exit before the next
+	  call to Frame
+
+Because the host and program are completely separate, only
+sharing the expected exports and an allocator, they can
+disagree on things like the type table, context
+structure, etc. without causing issues or crashes at
+runtime.
+
+Why
+---
+
+I like the workflow hot-reloading allows, and it's very
+simple to implement if done a certain way. I've been
+using this template for a while and thought it'd be a
+good idea to share for those who want something similar.
+
+
+LICENSE
+-------
+
+Public Domain
