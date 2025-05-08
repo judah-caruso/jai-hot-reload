@@ -12,8 +12,7 @@ G: *struct {
 #program_export StateSize : u64 = size_of(type_of(G.*));
 
 #program_export Init :: (state: *void, allocator: Allocator, reset: bool) {
-   Remap_Context();
-   context.allocator = .{ proc = CrashAllocatorProc };
+   Remap_Context(,,allocator = allocator);
 
    G = xx state;
    G.allocator = allocator;

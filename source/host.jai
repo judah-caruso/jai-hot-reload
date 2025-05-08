@@ -3,6 +3,9 @@ main :: () {
 
    system_allocator := context.allocator;
 
+   // Ensure we're not allocating anywhere unexpected
+   context.allocator = .{ proc = CrashAllocatorProc };
+
    #if HOT_RELOAD {
       lib_api, ok := LoadLibrary(0);
       assert(ok, "host: failed to load library");
@@ -93,7 +96,7 @@ main :: () {
             }
          }
          else {
-            print("host: performing soft reload...\n");
+            print("host: performing soft reload (in use: %/%)...\n", lib_arena.offset, lib_arena.memory_size);
             array_add(*lib_versions, L);
          }
 
