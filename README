@@ -33,10 +33,10 @@ temporary copy of the library to ensure we can still
 overwrite the original when compiling.
 
 When hot reloading is disabled, the host imports the
-program, calling into it in the exact same way (minus the
-dynamic linking step).
+program module, calling into it in the exact same way
+(minus the dynamic linking step).
 
-The program is expected to export the following:
+The program *must* export the following:
 
 	- MaxMemory: a value to tell the host how much memory
 	  the program needs to run; if the host can allocate
@@ -49,11 +49,11 @@ The program is expected to export the following:
 	  tells the host if memory can safely be reused after
 	  reloading.
 	
-	- Init: a procedure that gets called *after* the host
-	  has initialized the game's memory; it is
-	  additionally called after a reload with 'reset'
-	  denoting what kind of reload just occurred (reset =
-	  true means the program should reset its global state)
+	- Init: a procedure that's called *after* the host has
+	  initialized the programs's memory; it is also called
+	  after a reload, with 'reset' denoting what kind of
+	  reload just occurred (reset = true means the program
+	  should reset its global state)
 	
 	- Startup: a procedure that's called *once* after the
 	  first call to Init
